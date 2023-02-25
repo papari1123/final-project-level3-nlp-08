@@ -25,7 +25,7 @@ jobs:
     - uses: google-github-actions/setup-gcloud@v1
       with:
         version: '290.0.1'
-        credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+        service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
 
     # gcloud에서 Docker 사용할 수 있도록 설정
