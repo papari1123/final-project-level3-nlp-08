@@ -17,7 +17,7 @@ def load_model():
 
 bart_model = load_model()
 
-def generate(text, beam_search_num=3):
+def generate(text, beam_search_num=10):
     
     input_ids = [tokenizer.bos_token_id] + tokenizer.encode(text) + [tokenizer.eos_token_id]
     input_ids = torch.tensor([input_ids]).to(device)
@@ -58,7 +58,7 @@ class ServerHandler(BaseHTTPRequestHandler):
         infer_time = time.time() - start_time
         
         message['answer'] = infer_text
-        message['took'] = infer_time
+        message['took'] = str(infer_time) + "sec"
         
         self._set_headers()
         self.wfile.write(json.dumps(message).encode())
