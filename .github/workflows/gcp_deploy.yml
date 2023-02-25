@@ -4,11 +4,11 @@ on:
   push:
       branches: [ main ]
       paths:
-        - 'part2/04-cicd/**'
+        - 'summary_deploy/**'
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  DOCKER_IMAGE_NAME: streamlit
+  DOCKER_IMAGE_NAME: summary_good
   GCE_INSTANCE: ${{ secrets.GCE_INSTANCE }}
   GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
 
