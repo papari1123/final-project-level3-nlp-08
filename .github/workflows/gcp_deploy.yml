@@ -31,11 +31,6 @@ jobs:
     # gcloud에서 Docker 사용할 수 있도록 설정
     - run: |-
         gcloud --quiet auth configure-docker
-    # Model 파일 복사
-    - name: Copy model file
-      run: |
-        cd part2/04-cicd
-        sh copy_asset.sh
     # Docker Image Build
     - name: Build
       run: |-
