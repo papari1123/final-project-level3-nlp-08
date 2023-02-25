@@ -1,0 +1,47 @@
+name: Build and Deploy to Google Compute Engine
+
+on:
+  push:
+      branches: [ main ]
+      paths:
+        - 'summary_deploy/**'
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  DOCKER_IMAGE_NAME: summary_good
+  GCE_INSTANCE: ${{ secrets.GCE_INSTANCE }}
+  GCE_INSTANCE_ZONE: ${{ secrets.GCE_INSTANCE_ZONE }}
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # gcloud CLI 설정
+    - uses: google-github-actions/setup-gcloud@master
+      with:
+        version: '290.0.1'
+        credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+    # gcloud에서 Docker 사용할 수 있도록 설정
+    - run: |-
+        gcloud --quiet auth configure-docker
+    # Docker Image Build
+    - name: Build
+      run: |-
+        docker build part2/04-cicd --tag "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
+    # Docker Image Push
+    - name: Publish
+      run: |-
+        docker push "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
+    # Deploy : update-container로 업데이트 요청
+    - name: Deploy
+      run: |-
+        gcloud compute instances update-container "$GCE_INSTANCE" \
+          --zone "$GCE_INSTANCE_ZONE" \
+          --container-image "gcr.io/$PROJECT_ID/$DOCKER_IMAGE_NAME:$GITHUB_SHA"
